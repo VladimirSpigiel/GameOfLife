@@ -7,9 +7,9 @@
 #include <CL\cl.hpp>
 #include "Model.h"
 #include "OpenCLController.h"
-#include "View.h"
+#include "GLUTView.h"
 
-int main() {
+int main(int argc, char **argv) {
 
 	/* 
 	   MVC PROJECT BECAUSE I DONT KNOW IF IM GONNA USE
@@ -17,12 +17,19 @@ int main() {
 	*/
 	
 	Model *model = new Model(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-	OpenCLController controller(model, "kernel.cl", "gameStep");
-	View view(controller);
+	OpenCLController *controller = new OpenCLController(model, "kernel.cl", "gameStep");
+	GLUTView view(controller);
 
 
-	for (int i = 0; i < 20; i++)
-		std::cout << "STEP TOOK : " << controller.step() << "ms" << std::endl;
+	float avg = 0.0;
+
+	
+	avg += controller->step();
+
+
+	std::cout << "STEP TOOK : " << avg << "ms";
+
+	
 
 
 	return 0;

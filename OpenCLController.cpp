@@ -20,9 +20,7 @@ OpenCLController::OpenCLController(Model * const model, std::string source, cons
 		std::cout << "Could not open " + source + " file" << std::endl;
 		exit(1);
 	}
-
-	std::cout << content;
-
+	
 	std::vector<cl::Platform> all_platforms;
 	cl::Platform::get(&all_platforms);
 	if (all_platforms.size() == 0) {
@@ -77,8 +75,14 @@ OpenCLController::~OpenCLController()
 	_view = NULL;
 }
 
+void OpenCLController::setView(IObservable * view) { 
+	_view = view; 
+	_view->setGrid(_model->getGrid());
+}
+
 float OpenCLController::step()
 {
+	std::cout << "STEP" << std::endl;
 
 	/* UPDATE FIRST ARGUMENT */
 	_kernel.setArg(0, _d_grid_before);
@@ -110,7 +114,8 @@ float OpenCLController::step()
 void OpenCLController::updateView() const
 {
 	_view->setGeneration(_model->getGeneration());
-	_view->draw(_model->getGrid());
+	_view->setGrid(_model->getGrid());
 	
+	_view->notify();
 
 }

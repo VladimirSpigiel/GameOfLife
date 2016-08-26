@@ -17,7 +17,7 @@ public:
 	cl::Context *getContext() { return &_context; }
 
 	/* SETTERS */
-	void setView(IObservable * view) { _view = view; }
+	void setView(IObservable * view);
 
 	/* METHODS */
 	float step();
