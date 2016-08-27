@@ -36,40 +36,6 @@ GLUTView::~GLUTView()
 {
 }
 
-const int GLUTView::getWidth() const
-{
-	return _width;
-}
-
-const int GLUTView::getHeight() const
-{
-	return _height;
-}
-
-const Cell const * GLUTView::getGrid() const
-{
-	return _grid;
-}
-
-void GLUTView::setWidth(const int w)
-{
-	_width = w;
-}
-
-void GLUTView::setHeight(const int h)
-{
-	_height = h;
-}
-
-void GLUTView::setGeneration(const int g)
-{
-	_generation = g;
-}
-
-void GLUTView::setGrid(const Cell const * grid)
-{
-	_grid = grid;
-}
 
 void GLUTView::notify() const
 {

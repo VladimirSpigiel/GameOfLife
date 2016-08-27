@@ -14,15 +14,15 @@ public:
 	~GLUTView();
 
 	/* GETTERS */
-	virtual const int getWidth() const;
-	virtual const int getHeight() const;
-	virtual const Cell const* getGrid() const;
+	virtual const int getWidth() const { return _width; }
+	virtual const int getHeight() const { return _height; }
+	virtual const Cell const* getGrid() const { return _grid; }
 
 	/* SETTERS */
-	virtual void setWidth(const int w);
-	virtual void setHeight(const int h);
-	virtual void setGeneration(const int g);
-	virtual void setGrid(const Cell const * grid);
+	virtual void setWidth(const int w) { _width = w; }
+	virtual void setHeight(const int h) { _height = h; }
+	virtual void setGeneration(const int g) { _generation = g; }
+	virtual void setGrid(const Cell const * grid) { _grid = grid; }
 
 	/* METHODS */
 	virtual void notify() const;
