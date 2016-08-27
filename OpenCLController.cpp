@@ -82,8 +82,6 @@ void OpenCLController::setView(IObservable * view) {
 
 float OpenCLController::step()
 {
-	std::cout << "STEP" << std::endl;
-
 	/* UPDATE FIRST ARGUMENT */
 	_kernel.setArg(0, _d_grid_before);
 
@@ -109,6 +107,12 @@ float OpenCLController::step()
 
 	return nanoElapsed / 1000 / 1000;
 
+}
+
+void OpenCLController::toggle_cell(int x, int y)
+{
+	_model->toggle_cell(x, y);
+	this->updateView();
 }
 
 void OpenCLController::updateView() const

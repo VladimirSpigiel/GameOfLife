@@ -27,6 +27,8 @@ GLUTView::GLUTView(OpenCLController * controller)
 	/* FUNC USED BY GLUT TO RENDER */
 	glutDisplayFunc(render);
 	glutKeyboardFunc(onKeyboard);
+	glutMouseFunc(onMouse);
+	glutMotionFunc(onMotion);
 	glutMainLoop();
 }
 
@@ -62,8 +64,6 @@ void GLUTView::setHeight(const int h)
 void GLUTView::setGeneration(const int g)
 {
 	_generation = g;
-
-	std::cout << "GENERATION :" << _generation << std::endl;
 }
 
 void GLUTView::setGrid(const Cell const * grid)
@@ -78,11 +78,32 @@ void GLUTView::notify() const
 
 void GLUTView::onKeyboard(unsigned char key, int x, int y)
 {
-
-	if ((int) key == 32)
+	if ((int) key == STEP_KEY)
 		GLUTView::m_instance->_controller->step();
 
+	if ((int) key == TOGGLE_DISPLAY_GRID_KEY) {
+		GLUTView::m_instance->_gridDisplayed = !GLUTView::m_instance->_gridDisplayed;
+		GLUTView::m_instance->notify();
+	}
+}
 
+void GLUTView::onMouse(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+		GLUTView::m_instance->toggle_cell(x, y);
+	
+}
+
+void GLUTView::onMotion(int x, int y)
+{
+	GLUTView::m_instance->toggle_cell(x, y);
+}
+
+void GLUTView::toggle_cell(int x, int y)
+{
+	int xReal = (int)(x / TILE_SIZE);
+	int yReal = (int)(y / TILE_SIZE);
+	GLUTView::m_instance->_controller->toggle_cell(xReal, yReal);
 }
 
 void GLUTView::render(){
@@ -93,26 +114,31 @@ void GLUTView::render(){
 	const int width = GLUTView::m_instance->getWidth();
 	const int height = GLUTView::m_instance->getHeight();
 	const Cell const * cells = GLUTView::m_instance->getGrid();
+	const bool gridDisplayed = GLUTView::m_instance->_gridDisplayed;
 
+	glColor3f(0.7, 0.7, 0.7);
 	glBegin(GL_LINES);
 
 	// DRAW VERTICAL LINES
-	for (int y = 0; y < height; y++) {
-		glVertex2f(y*TILE_SIZE, 0);
-		glVertex2f(y*TILE_SIZE, height * TILE_SIZE);
-	}
 
-	// DRAW HORIZONTAL LINES
-	for (int x = 0; x < width; x++) {
-		glVertex2f(0, x*TILE_SIZE);
-		glVertex2f(width * TILE_SIZE, x*TILE_SIZE);
+	if (gridDisplayed) {
+
+		for (int y = 0; y < height; y++) {
+			glVertex2f(y*TILE_SIZE, 0);
+			glVertex2f(y*TILE_SIZE, height * TILE_SIZE);
+		}
+
+		// DRAW HORIZONTAL LINES
+		for (int x = 0; x < width; x++) {
+			glVertex2f(0, x*TILE_SIZE);
+			glVertex2f(width * TILE_SIZE, x*TILE_SIZE);
+		}
 	}
 
 	glEnd();
 
-
 	// DRAW CELLS
-	glBegin(GL_POLYGON);
+	glColor3f(1, 0.7, 0);
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 
@@ -120,22 +146,18 @@ void GLUTView::render(){
 			Cell cell = cells[y * width + x];
 
 			if (cell == ALIVE_CELL) {
-
+				
 				// DRAW A RECTANGLE WHICH REPRESENTS A CELL 
+				glBegin(GL_POLYGON);
 				glVertex2d(x*TILE_SIZE, y*TILE_SIZE);
-
 				glVertex2d(x*TILE_SIZE + TILE_SIZE, y*TILE_SIZE);
-
 				glVertex2d(x*TILE_SIZE + TILE_SIZE, y*TILE_SIZE + TILE_SIZE);
-
 				glVertex2d(x*TILE_SIZE, y*TILE_SIZE + TILE_SIZE);
-
-				glVertex2d(x*TILE_SIZE, y*TILE_SIZE);
+				glEnd();
 			}
 		}
 	}
-	glEnd();
-
+	
 	// EPILOGUE
 	glutSwapBuffers();
 

@@ -30,6 +30,8 @@ public:
 	/* DECLARED AS STATIC BECAUSE GLUT NEEDS THOSE GLOBAL FUNCTIONS */
 	static void render();
 	static void onKeyboard(unsigned char key, int x, int y);
+	static void onMouse(int button, int state, int x, int y);
+	static void onMotion(int x, int y);
 
 private:
 	int _width;
@@ -37,5 +39,9 @@ private:
 	int _generation;
 	const Cell const *_grid = NULL;
 	OpenCLController *_controller;
+
+	bool _gridDisplayed = false;
+
+	void toggle_cell(int x, int y);
 };
 

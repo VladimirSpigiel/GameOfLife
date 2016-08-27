@@ -21,6 +21,7 @@ public:
 
 	/* METHODS */
 	float step();
+	void toggle_cell(int x, int y);
 
 protected:
 

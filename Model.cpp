@@ -27,6 +27,16 @@ Model::~Model()
 	}
 }
 
+void Model::toggle_cell(int x, int y)
+{
+	if (x < _width && y < _height && x >= 0 && y >= 0) {
+
+		Cell &cell = _h_grid[y * _width + x];
+		cell = cell == DEAD_CELL ? ALIVE_CELL : DEAD_CELL;
+		
+	}
+}
+
 
 
 
