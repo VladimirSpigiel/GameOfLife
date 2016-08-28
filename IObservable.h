@@ -9,12 +9,12 @@ class IObservable
 public:
 
 	/* GETTERS TO IMPLEMENT */
-	virtual const int getWidth() const = 0;
-	virtual const int getHeight() const = 0;
+	virtual const int getGridWidth() const = 0;
+	virtual const int getGridHeight() const = 0;
 
 	/* SETTERS TO IMPLEMENT */
-	virtual void setWidth(const int w) = 0;
-	virtual void setHeight(const int h) = 0;
+	virtual void setGridWidth(const int w) = 0;
+	virtual void setGridHeight(const int h) = 0;
 	virtual void setGeneration(const int g) = 0;
 	virtual void setGrid(const Cell const * grid) = 0;
 

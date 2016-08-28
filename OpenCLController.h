@@ -21,7 +21,8 @@ public:
 
 	/* METHODS */
 	float step();
-	void toggle_cell(int x, int y);
+	float fill(FillMode mode);
+	void toggleCell(int x, int y);
 
 protected:
 
@@ -29,6 +30,7 @@ protected:
 	cl::CommandQueue _queue;
 	cl::Kernel _kernel;
 	cl::Context _context;
+	cl::Program _program;
 
 	cl::Buffer _d_grid_before;
 	cl::Buffer _d_grid_after;

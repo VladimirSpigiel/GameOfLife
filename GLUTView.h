@@ -14,13 +14,13 @@ public:
 	~GLUTView();
 
 	/* GETTERS */
-	virtual const int getWidth() const { return _width; }
-	virtual const int getHeight() const { return _height; }
+	virtual const int getGridWidth() const { return _gridWidth; }
+	virtual const int getGridHeight() const { return _gridHeight; }
 	virtual const Cell const* getGrid() const { return _grid; }
 
 	/* SETTERS */
-	virtual void setWidth(const int w) { _width = w; }
-	virtual void setHeight(const int h) { _height = h; }
+	virtual void setGridWidth(const int w) { _gridWidth = w; }
+	virtual void setGridHeight(const int h) { _gridHeight = h; }
 	virtual void setGeneration(const int g) { _generation = g; }
 	virtual void setGrid(const Cell const * grid) { _grid = grid; }
 
@@ -36,12 +36,14 @@ public:
 private:
 	int _width;
 	int _height;
+
 	int _generation;
+	int _gridWidth;
+	int _gridHeight;
 	const Cell const *_grid = NULL;
 	OpenCLController *_controller;
-
 	bool _gridDisplayed = false;
 
-	void toggle_cell(int x, int y);
+	void toggleCell(int x, int y);
 };
 

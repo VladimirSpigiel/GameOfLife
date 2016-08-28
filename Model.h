@@ -16,9 +16,10 @@ public:
 
 	/* SETTERS */
 	inline void nextGeneration() { _generation++; }
+	inline void reset() { _generation = 0; }
 
 	/* METHODS */
-	void toggle_cell(int x, int y);
+	void toggleCell(int x, int y);
 	
 
 private: 

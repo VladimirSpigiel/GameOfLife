@@ -4,6 +4,24 @@
 #define GRID_AFTER(Y, X) gridAfter[(Y) * width + (X)]
 
 
+
+__kernel void fill(__global int* gridBefore, __global int* gridAfter, const int width, const int height, FillMode mode) {
+
+	/* GET GLOBAL LOCATION */
+	__private int x = get_global_id(0);
+	__private int y = get_global_id(1);
+	__private Cell affect;
+	
+	if (mode == FILL_EMPTY)
+		affect = DEAD_CELL;
+	else if (mode == FILL_FULL)
+		affect = ALIVE_CELL;
+	
+
+	GRID_AFTER(y, x) = affect;
+}
+
+
 __kernel void gameStep (__global int* gridBefore, __global int* gridAfter, const int width, const int height) {
 
 	/* GET GLOBAL LOCATION */

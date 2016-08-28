@@ -27,7 +27,7 @@ Model::~Model()
 	}
 }
 
-void Model::toggle_cell(int x, int y)
+void Model::toggleCell(int x, int y)
 {
 	if (x < _width && y < _height && x >= 0 && y >= 0) {
 

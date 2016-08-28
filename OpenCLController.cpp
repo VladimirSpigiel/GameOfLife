@@ -47,26 +47,19 @@ OpenCLController::OpenCLController(Model * const model, std::string source, cons
 	// kernel calculates for each element C=A+B                                                                         ";
 	sources.push_back({ content.c_str(), content.length() });
 
-	cl::Program program(_context, sources);
-	if (program.build({ default_device }) != CL_SUCCESS) {
-		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n";
+	_program = cl::Program(_context, sources);
+	if (_program.build({ default_device }) != CL_SUCCESS) {
+		std::cout << " Error building: " << _program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n";
 		exit(1);
 	}
 
 	_queue = cl::CommandQueue(_context, default_device, CL_QUEUE_PROFILING_ENABLE);
 
-	_kernel = cl::Kernel(program, functorName);
-
-
 	/* ALLOCATE MEMORY ON DEVICE */
 	_d_grid_before = cl::Buffer(_context, CL_MEM_READ_ONLY, sizeof(Cell) * _model->getWidth() * _model->getHeight());
 	_d_grid_after = cl::Buffer(_context, CL_MEM_WRITE_ONLY, sizeof(Cell) * _model->getWidth() * _model->getHeight());
 
-	/* SET KERNEL ARGUEMENTS */
-	_kernel.setArg(1, _d_grid_after);
-	_kernel.setArg(2, _model->getWidth());
-	_kernel.setArg(3, _model->getHeight());
-	
+		
 }
 
 
@@ -82,8 +75,13 @@ void OpenCLController::setView(IObservable * view) {
 
 float OpenCLController::step()
 {
-	/* UPDATE FIRST ARGUMENT */
+	_kernel = cl::Kernel(_program, "gameStep");
+
+	/* SET KERNEL ARGUEMENTS */
 	_kernel.setArg(0, _d_grid_before);
+	_kernel.setArg(1, _d_grid_after);
+	_kernel.setArg(2, _model->getWidth());
+	_kernel.setArg(3, _model->getHeight());
 
 	/* WRITE DATA TO DEVICE */
 	_queue.enqueueWriteBuffer(_d_grid_before, CL_TRUE, 0, sizeof(Cell) * _model->getWidth() * _model->getHeight(), _model->getGrid());
@@ -109,9 +107,42 @@ float OpenCLController::step()
 
 }
 
-void OpenCLController::toggle_cell(int x, int y)
+float OpenCLController::fill(FillMode mode) {
+	_kernel = cl::Kernel(_program, "fill");
+
+	/* SET KERNEL ARGUEMENTS */
+	_kernel.setArg(0, _d_grid_before);
+	_kernel.setArg(1, _d_grid_after);
+	_kernel.setArg(2, _model->getWidth());
+	_kernel.setArg(3, _model->getHeight());
+	_kernel.setArg(4, mode);
+
+	/* WRITE DATA TO DEVICE */
+	_queue.enqueueWriteBuffer(_d_grid_before, CL_TRUE, 0, sizeof(Cell) * _model->getWidth() * _model->getHeight(), _model->getGrid());
+
+	/* LAUNCH KERNEL */
+	cl::Event evt;
+	_queue.enqueueNDRangeKernel(_kernel, cl::NullRange, cl::NDRange(_model->getWidth(), _model->getHeight()), cl::NullRange, NULL, &evt);
+	evt.wait();
+
+	/* READ BACK VALUES */
+	_queue.enqueueReadBuffer(_d_grid_after, CL_TRUE, 0, sizeof(Cell) * _model->getWidth() * _model->getHeight(), _model->getGrid());
+
+	/* ESTIMATE THE KERNEL RUNTIME DURATION */
+	float nanoElapsed = evt.getProfilingInfo<CL_PROFILING_COMMAND_END>() - evt.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+
+	_model->reset();
+	this->updateView();
+
+	/* N = N + 1 */
+	_d_grid_before = _d_grid_after;
+
+	return nanoElapsed / 1000 / 1000;
+}
+
+void OpenCLController::toggleCell(int x, int y)
 {
-	_model->toggle_cell(x, y);
+	_model->toggleCell(x, y);
 	this->updateView();
 }
 
